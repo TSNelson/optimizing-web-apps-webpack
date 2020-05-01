@@ -3,6 +3,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 // See old config for notes on settings
 // Configures different builds for different environment, passing in a variable through an argument passed to webpack. Merge is used to combine the parts together into a single configuration file.
@@ -32,6 +33,7 @@ module.exports = function (env) {
       ]
     },
     plugins: [
+      new CleanWebpackPlugin(['app/dist']) // clears given folder locations prior to bundling 
     ]
   };
 
