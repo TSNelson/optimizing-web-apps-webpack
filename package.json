@@ -3,6 +3,11 @@
   "private": true,
   "dependencies": {},
   "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.1",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "babel-loader": "^8.0.6",
     "bower": "^1.8.2",
     "eslint": "^4.9.0",
     "http-server": "^0.10.0",
@@ -14,14 +19,15 @@
     "karma-junit-reporter": "^1.2.0",
     "nodemon": "^1.12.7",
     "webpack": "^3.8.1",
-    "webpack-dev-server": "^2.9.7"
+    "webpack-dev-server": "^2.9.7",
+    "webpack-merge": "^4.2.2"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --env production",
     "watch": "npm run build -- --watch",
     "postinstall": "node node_modules/bower/bin/bower install",
     "simple_start": "webpack-dev-server --env development --open",
-    "start": "nodemon -w webpack.config.js -x webpack-dev-server --open",
+    "start": "nodemon -w webpack.config.js -x webpack-dev-server --env development --open",
     "test": "karma start karma.conf.js",
     "test-single-run": "karma start karma.conf.js --single-run"
   }
