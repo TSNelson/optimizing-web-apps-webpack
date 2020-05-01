@@ -23,7 +23,7 @@
     "webpack-merge": "^4.2.2"
   },
   "scripts": {
-    "build": "webpack --env production",
+    "build": "webpack",
     "watch": "npm run build -- --watch",
     "postinstall": "node node_modules/bower/bin/bower install",
     "simple_start": "webpack-dev-server --env development --open",

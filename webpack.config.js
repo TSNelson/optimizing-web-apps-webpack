@@ -1,3 +1,5 @@
+// To debug a webpack build, run: node --inspect-brk node_modules/.bin/webpack --env production (add nodejs inspector plugin to chrome)
+
 const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
@@ -39,34 +41,50 @@ module.exports = function (env) {
         {
           test: /\.js$/,
           exclude: /(node_modules|bower_components)/,
-          use: {
-            loader: 'babel-loader'
+          use: [ // use an array to specify a pipeline of multiple loaders to use
+            {
+              loader: 'tee-loader', // last in pipeline
+              options: {
+                label: 'after babel transpile'
+              }
+            },
+            {loader: 'babel-loader'
             // options: could put babel configuration object here but we created a separate babel configuration file instead
-          }
+            },
+            {
+              loader: 'tee-loader', // first in pipeline
+              options: {
+                label: 'before babel transpile'
+              }
+            }
+          ]
         }
       ]
+    },
+    resolveLoader: { // add paths to loaders not found in node_modules
+      alias: {
+        "tee-loader": path.resolve(__dirname, 'tee-loader.js')
+      }
     }
-  }
+  };
 
-  if (isDevelopment) {
+  const devServerConfig = {
+    devServer: {
+      contentBase: path.resolve(__dirname, 'app'),
+      publicPath: '/dist/',
+      watchContentBase: false,
+      hotOnly: true,
+      overlay: true // displays errors?
+      //host: "0.0.0.0" // remove to only host locally see devServer/host
+    },
+    plugins: [
+      new webpack.NamedModulesPlugin(),
+      new webpack.HotModuleReplacementPlugin()
+    ]
+  };
 
-    const devServerConfig = {
-      devServer: {
-        contentBase: path.resolve(__dirname, 'app'),
-        publicPath: '/dist/',
-        watchContentBase: false,
-        hotOnly: true,
-        overlay: true // displays errors?
-        //host: "0.0.0.0" // remove to only host locally see devServer/host
-      },
-      plugins: [
-        new webpack.NamedModulesPlugin(),
-        new webpack.HotModuleReplacementPlugin()
-      ]
-    };
-
-    return isDevelopment ? 
-           merge(baseConfig, devServerConfig, babelConfig) : // Development Configuration (could bypass babel transpilation when hosted locally by removing that configuration object from the merge arguments)
-           merge(baseConfig, babelConfig); // Production Configuration
-  }
+  // returns a different configuration object depending on the build script
+  return isDevelopment ? 
+         merge(baseConfig, devServerConfig, babelConfig) : // Development
+         merge(baseConfig, babelConfig); // Production
 };
